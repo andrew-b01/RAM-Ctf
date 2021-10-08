@@ -1,0 +1,20 @@
+name: RamCTF
+version: '${project.version}'
+main: me.average.ramctf.Main
+api-version: 1.17
+commands:
+  setup:
+    description: start game
+    usage: /<command>
+  team:
+    description: global team menu
+    usage: /<command>
+  team blue:
+    description: join blue team
+    usage: /<command>
+  team red:
+    description: join red team
+    usage: /<command>
+  clearmiddle:
+    description: change whether to clear blocks between both platforms
+    usage: /<command>
