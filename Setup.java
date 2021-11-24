@@ -8,16 +8,19 @@ import org.bukkit.entity.Player;
 
 
 public class Setup implements CommandExecutor {
-    public int bluex;
-    public int redx;
-    public int y;
-    public int z;
+    public static int bluex;
+    public static int redx;
+    public static int y;
+    public static int z;
     public boolean clearmiddle = true;
-
+    public static Player player;
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
-        Player player = (Player) sender;
+        player = (Player) sender;
+        Setup setup = new Setup();
+        PlatformSpawner platformSpawnerBlue = new PlatformSpawner();
+        PlatformSpawner platformSpawnerRed = new PlatformSpawner();
         if (!(sender instanceof Player)) {
             return true;
         }
@@ -69,25 +72,25 @@ public class Setup implements CommandExecutor {
             }
         }
         World world = sender.getWorld();
-    if(clearmiddle){
-        if (color.equals("Red")) {
-            for (int i = 85; i > 0; i--) {
-                for (int o = 15; o > 0; o--) {
-                    for (int m = 15; m > 0; m--) {
-                        world.getBlockAt(x + i, y + o, z + m).setType(Material.AIR);
+        if(clearmiddle){
+            if (color.equals("Red")) {
+                for (int i = 85; i > 0; i--) {
+                    for (int o = 15; o > 0; o--) {
+                        for (int m = 15; m > 0; m--) {
+                            world.getBlockAt(x + i, y + o, z + m).setType(Material.AIR);
+                        }
                     }
                 }
-            }
-        } else {
-            for (int i = -85; i < 0; i++) {
-                for (int o = 15; o > 0; o--) {
-                    for (int m = 15; m > 0; m--) {
-                        world.getBlockAt(x + i, y + o, z + m).setType(Material.AIR);
+            } else {
+                for (int i = -85; i < 0; i++) {
+                    for (int o = 15; o > 0; o--) {
+                        for (int m = 15; m > 0; m--) {
+                            world.getBlockAt(x + i, y + o, z + m).setType(Material.AIR);
+                        }
                     }
                 }
             }
         }
-    }
 
 
 
@@ -106,4 +109,3 @@ public class Setup implements CommandExecutor {
         }
     }
 }
-

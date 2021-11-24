@@ -22,7 +22,10 @@ public class Teams implements CommandExecutor {
     Objective obj = board.registerNewObjective("MainScoreboard","dummy");
     Score bluescore = obj.getScore(ChatColor.BLUE + "BLUE SCORE: ");
     Score redscore = obj.getScore(ChatColor.RED + "RED SCORE: ");
-
+    static Team red;
+    static Team blue;
+    Location redflag;
+    Location blueflag;
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player)) {
@@ -34,8 +37,8 @@ public class Teams implements CommandExecutor {
         double y = setup.y;
         double z = setup.z;
         Player player = (Player) sender;
-        Location redflag = new Location(player.getWorld(), redx, y, z);
-        Location blueflag = new Location(player.getWorld(), bluex, y, z);
+        redflag = new Location(player.getWorld(), redx, y, z);
+        blueflag = new Location(player.getWorld(), bluex, y, z);
         // start game
 
 
@@ -62,8 +65,7 @@ public class Teams implements CommandExecutor {
         }
 
         else if (args[0].equals("blue")) {
-            player.setBedSpawnLocation(blueflag, true);
-            Team blue = board.registerNewTeam("Blue");
+            blue = board.registerNewTeam("Blue");
             blue.setPrefix(ChatColor.BLUE + "[BLUE] " + ChatColor.WHITE);
 
             blue.setAllowFriendlyFire(false);
@@ -71,12 +73,11 @@ public class Teams implements CommandExecutor {
             blue.setCanSeeFriendlyInvisibles(true);
             blue.addPlayer(player);
             player.setScoreboard(board);
-            player.sendMessage(ChatColor.DARK_AQUA + "You have joined the BLUE team");
+            player.sendMessage(ChatColor.DARK_AQUA + "You have joined the BLUE team, press TAB to check teams");
     }
 
         else if (args[0].equals("red")) {
-            player.setBedSpawnLocation(redflag, true);
-            Team red = board.registerNewTeam("Red");
+            red = board.registerNewTeam("Red");
             red.setPrefix(ChatColor.RED + "[RED] " + ChatColor.WHITE);
 
             red.setAllowFriendlyFire(false);
@@ -84,7 +85,7 @@ public class Teams implements CommandExecutor {
             red.setCanSeeFriendlyInvisibles(true);
             red.addPlayer(player);
             player.setScoreboard(board);
-            player.sendMessage(ChatColor.DARK_AQUA + "You have joined the RED team");
+            player.sendMessage(ChatColor.DARK_AQUA + "You have joined the RED team, press TAB to check teams");
         }
 
         bluescore.setScore(0);
@@ -92,14 +93,23 @@ public class Teams implements CommandExecutor {
         redscore.setScore(0);
 
         return true;}
-
+    public Team getTeamRed(){
+        return red;
+    }
+    public Team getTeamBlue(){
+        return blue;
+    }
+    public Location getBlueLocation(){
+        return blueflag;
+    }
+    public Location getRedLocation(){
+        return redflag;
+    }
     public void addBlue(){
         bluescore.setScore(bluescore.getScore()+1);
     }
-    public void addRed(){
-
-        redscore.setScore(redscore.getScore()+1);
-}}
+    public void addRed() {redscore.setScore(redscore.getScore()+1);}
+}
 
 
 
