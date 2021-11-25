@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.scoreboard.*;
-import java.util.function.ObjLongConsumer;
+
 
 
 public class Teams implements CommandExecutor {
@@ -25,13 +25,15 @@ public class Teams implements CommandExecutor {
     Score redscore;
     static int bluePoints = 0;
     static int redPoints = 0;
+    Player player;
+
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player)) {
             return true;
         }
 
-        Setup setup = new Setup(); Player player = (Player) sender;
+        Setup setup = new Setup(); player = (Player) sender;
 
         double redx = setup.redx; double bluex = setup.bluex; double y = setup.y; double z = setup.z;
 

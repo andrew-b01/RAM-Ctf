@@ -115,10 +115,11 @@ public class Setup implements CommandExecutor {
     static void clearBlueFlag(){
         world.getBlockAt(bluex + 7, y + 1, z + 8).setType(Material.AIR);
     }
-    static void resetRedFlag(){
-        world.getBlockAt(redx + 7, y + 1, z + 8).setType(Material.RED_BANNER);
-    }
+    static void resetRedFlag(){ world.getBlockAt(redx + 7, y + 1, z + 8).setType(Material.RED_BANNER); }
     static void resetBlueFlag(){
         world.getBlockAt(bluex + 7, y + 1, z + 8).setType(Material.BLUE_BANNER);
     }
-}
+    static void placeBlueFlag(int x, int y, int z){ world.getBlockAt(x, y, z).setType(Material.BLUE_BANNER);}
+    static void placeRedFlag(int x, int y, int z){ world.getBlockAt(x, y, z).setType(Material.RED_BANNER);}
+    }
+
