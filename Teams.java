@@ -17,34 +17,37 @@ import java.util.function.ObjLongConsumer;
 
 public class Teams implements CommandExecutor {
 
-    ScoreboardManager manager = Bukkit.getScoreboardManager();
-    Scoreboard board = manager.getNewScoreboard();
-    Objective obj = board.registerNewObjective("MainScoreboard","dummy");
-    Score bluescore = obj.getScore(ChatColor.BLUE + "BLUE SCORE: ");
-    Score redscore = obj.getScore(ChatColor.RED + "RED SCORE: ");
     static Team red;
     static Team blue;
     Location redflag;
     Location blueflag;
+    Score bluescore;
+    Score redscore;
+    static int bluePoints = 0;
+    static int redPoints = 0;
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player)) {
             return true;
         }
-        Setup setup = new Setup();
-        double redx = setup.redx;
-        double bluex = setup.bluex;
-        double y = setup.y;
-        double z = setup.z;
-        Player player = (Player) sender;
+
+        Setup setup = new Setup(); Player player = (Player) sender;
+
+        double redx = setup.redx; double bluex = setup.bluex; double y = setup.y; double z = setup.z;
+
+        ScoreboardManager manager = Bukkit.getScoreboardManager();
+        Scoreboard board = manager.getNewScoreboard();
+        Objective obj = board.registerNewObjective("MainScoreboard","dummy", ChatColor.BOLD + "------RamCTF-----\n\n");
+        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+        bluescore = obj.getScore(ChatColor.BLUE + "BLUE SCORE: " + ChatColor.GOLD + bluePoints);
+        redscore = obj.getScore(ChatColor.RED + "RED SCORE: " + ChatColor.GOLD + redPoints);
+        redscore.setScore(1);
+        bluescore.setScore(2);
+        player.setScoreboard(board);
+
         redflag = new Location(player.getWorld(), redx, y, z);
         blueflag = new Location(player.getWorld(), bluex, y, z);
-        // start game
-
-
-
-        obj.setDisplayName(ChatColor.BOLD + "------RamCTF-----\n\n");
-        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+        
         if (args.length == 0) {
 
             TextComponent blue = new TextComponent("\nJoin Blue Team\n");
@@ -72,7 +75,6 @@ public class Teams implements CommandExecutor {
             blue.setNameTagVisibility(NameTagVisibility.HIDE_FOR_OTHER_TEAMS);
             blue.setCanSeeFriendlyInvisibles(true);
             blue.addPlayer(player);
-            player.setScoreboard(board);
             player.sendMessage(ChatColor.DARK_AQUA + "You have joined the BLUE team, press TAB to check teams");
     }
 
@@ -84,7 +86,6 @@ public class Teams implements CommandExecutor {
             red.setNameTagVisibility(NameTagVisibility.HIDE_FOR_OTHER_TEAMS);
             red.setCanSeeFriendlyInvisibles(true);
             red.addPlayer(player);
-            player.setScoreboard(board);
             player.sendMessage(ChatColor.DARK_AQUA + "You have joined the RED team, press TAB to check teams");
         }
 
@@ -105,10 +106,13 @@ public class Teams implements CommandExecutor {
     public Location getRedLocation(){
         return redflag;
     }
-    public void addBlue(){
-        bluescore.setScore(bluescore.getScore()+1);
+
+    public static void addBlue(){
+        bluePoints += 1;
     }
-    public void addRed() {redscore.setScore(redscore.getScore()+1);}
+    public static void addRed() {
+        redPoints += 1;
+    }
 }
 
 

@@ -14,6 +14,7 @@ public class Setup implements CommandExecutor {
     public static int z;
     public boolean clearmiddle = true;
     public static Player player;
+    public static World world;
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
@@ -59,7 +60,7 @@ public class Setup implements CommandExecutor {
     static void platform(int x, int y, int z, Player sender, Material material, String color, Material banner, Boolean clearmiddle) {
         for (int i = 1; i < 16; i++) {
             for (int o = 0; o < 15; o++) {
-                World world = sender.getWorld();
+                world = sender.getWorld();
                 world.getBlockAt(x + o, y, z + i).setType(material);
                 int height = y;
                 int airheight = 1;
@@ -107,5 +108,17 @@ public class Setup implements CommandExecutor {
         else {
             Bukkit.broadcastMessage(ChatColor.RED + color + " platform has been placed at: x " + x + " y " + y + " z " + z);
         }
+    }
+    static void clearRedFlag(){
+        world.getBlockAt(redx + 7, y + 1, z + 8).setType(Material.AIR);
+    }
+    static void clearBlueFlag(){
+        world.getBlockAt(bluex + 7, y + 1, z + 8).setType(Material.AIR);
+    }
+    static void resetRedFlag(){
+        world.getBlockAt(redx + 7, y + 1, z + 8).setType(Material.RED_BANNER);
+    }
+    static void resetBlueFlag(){
+        world.getBlockAt(bluex + 7, y + 1, z + 8).setType(Material.BLUE_BANNER);
     }
 }
