@@ -21,30 +21,33 @@ public class Teams implements CommandExecutor {
     static Team blue;
     Location redflag;
     Location blueflag;
-    Score bluescore;
-    Score redscore;
+    static Score bluescore;
+    static Score redscore;
     static int bluePoints = 0;
     static int redPoints = 0;
     Player player;
+    static Scoreboard board;
+    static Objective obj;
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player)) {
             return true;
         }
 
-        Setup setup = new Setup(); player = (Player) sender;
+        player = (Player) sender;
 
-        double redx = setup.redx; double bluex = setup.bluex; double y = setup.y; double z = setup.z;
+        double redx = Setup.redx; double bluex = Setup.bluex; double y = Setup.y; double z = Setup.z;
 
         ScoreboardManager manager = Bukkit.getScoreboardManager();
-        Scoreboard board = manager.getNewScoreboard();
-        Objective obj = board.registerNewObjective("MainScoreboard","dummy", ChatColor.BOLD + "------RamCTF-----\n\n");
+        board = manager.getNewScoreboard();
+        obj = board.registerNewObjective("MainScoreboard","dummy", ChatColor.BOLD + "------RamCTF-----\n\n");
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-        bluescore = obj.getScore(ChatColor.BLUE + "BLUE SCORE: " + ChatColor.GOLD + bluePoints);
-        redscore = obj.getScore(ChatColor.RED + "RED SCORE: " + ChatColor.GOLD + redPoints);
-        redscore.setScore(1);
-        bluescore.setScore(2);
+        bluescore = obj.getScore(ChatColor.BLUE + "BLUE SCORE: " + ChatColor.GOLD);
+        redscore = obj.getScore(ChatColor.RED + "RED SCORE: " + ChatColor.GOLD);
+        redscore.setScore(0);
+        bluescore.setScore(0);
         player.setScoreboard(board);
 
         redflag = new Location(player.getWorld(), redx, y, z);
@@ -70,13 +73,23 @@ public class Teams implements CommandExecutor {
         }
 
         else if (args[0].equals("blue")) {
+
             blue = board.registerNewTeam("Blue");
             blue.setPrefix(ChatColor.BLUE + "[BLUE] " + ChatColor.WHITE);
 
             blue.setAllowFriendlyFire(false);
             blue.setNameTagVisibility(NameTagVisibility.HIDE_FOR_OTHER_TEAMS);
             blue.setCanSeeFriendlyInvisibles(true);
+
+            player.setBedSpawnLocation(blueflag, true);
+
+            if(red != null){
+                if(red.hasPlayer(player)){
+                    red.removePlayer(player);
+                }
+            }
             blue.addPlayer(player);
+            
             player.sendMessage(ChatColor.DARK_AQUA + "You have joined the BLUE team, press TAB to check teams");
     }
 
@@ -87,15 +100,29 @@ public class Teams implements CommandExecutor {
             red.setAllowFriendlyFire(false);
             red.setNameTagVisibility(NameTagVisibility.HIDE_FOR_OTHER_TEAMS);
             red.setCanSeeFriendlyInvisibles(true);
+
+            player.setBedSpawnLocation(redflag, true);
+
+            if(blue != null){
+                if(blue.hasPlayer(player)){
+                    blue.removePlayer(player);
+                }
+            }
             red.addPlayer(player);
             player.sendMessage(ChatColor.DARK_AQUA + "You have joined the RED team, press TAB to check teams");
         }
-
-        bluescore.setScore(0);
-
-        redscore.setScore(0);
-
         return true;}
+
+    public static void updateScoreboard(){
+        for(Player online : Bukkit.getOnlinePlayers()){
+            bluescore = obj.getScore(ChatColor.BLUE + "BLUE SCORE: " + ChatColor.GOLD);
+            redscore = obj.getScore(ChatColor.RED + "RED SCORE: " + ChatColor.GOLD);
+            redscore.setScore(redPoints);
+            bluescore.setScore(bluePoints);
+            online.setScoreboard(board);
+        }
+    }
+
     public Team getTeamRed(){
         return red;
     }
@@ -116,6 +143,5 @@ public class Teams implements CommandExecutor {
         redPoints += 1;
     }
 }
-
 
 

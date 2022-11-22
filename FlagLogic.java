@@ -1,13 +1,14 @@
 package me.average.ramctf;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.*;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
-
+import me.average.ramctf.Teams;
 
 public class FlagLogic implements Listener{
     static int redFlagX;
@@ -44,9 +45,9 @@ public class FlagLogic implements Listener{
 
     @EventHandler
     public void onPlayerSneak(PlayerToggleSneakEvent event){
-        Setup setup = new Setup();
-        PlatformSpawner.Spawn(setup.bluex, setup.y, setup.z, event.getPlayer(), Material.BLUE_WOOL, true);
-        PlatformSpawner.Spawn(setup.redx, setup.y, setup.z, event.getPlayer(), Material.RED_WOOL, true);
+        Teams.updateScoreboard();
+        PlatformSpawner.Spawn(Setup.bluex, Setup.y, Setup.z, event.getPlayer(), Material.BLUE_WOOL, true);
+        PlatformSpawner.Spawn(Setup.redx, Setup.y, Setup.z, event.getPlayer(), Material.RED_WOOL, true);
         player = event.getPlayer();
         Location location = player.getLocation();
         double playerx = location.getX();
@@ -58,20 +59,21 @@ public class FlagLogic implements Listener{
                 if (once) {
                     if (!redFlagCaptured && Teams.blue.hasPlayer(event.getPlayer())) {
                         world.playEffect(location, Effect.BLAZE_SHOOT, 0, 100);
-                        Bukkit.broadcastMessage(ChatColor.AQUA + "! ! ! " + ChatColor.RED + "Red " + ChatColor.AQUA + "flag stolen by " + ChatColor.RED + event.getPlayer().getName() + ChatColor.AQUA + " ! ! !");
+                        Bukkit.broadcastMessage(ChatColor.AQUA + "! ! ! " + ChatColor.RED + "Red " + ChatColor.AQUA + "flag stolen by " + ChatColor.BLUE + event.getPlayer().getName() + ChatColor.AQUA + " ! ! !");
                         redFlagCaptured = true;
                         redCaptureName = event.getPlayer().getDisplayName();
                         once = !once;
                         Setup.clearRedFlag();
-
+                        world.getBlockAt(location).setType(Material.AIR);
                     }
                     if (blueFlagCaptured && Teams.red.hasPlayer(event.getPlayer()) && (event.getPlayer().getName() == blueCaptureName)) {
                         Teams.addRed();
                         Setup.resetBlueFlag();
-                        Bukkit.broadcastMessage(ChatColor.AQUA + "! ! ! " + ChatColor.BLUE + "Blue " + ChatColor.AQUA + "flag captured by " + ChatColor.BLUE + event.getPlayer().getName() + ChatColor.AQUA + " ! ! !");
+                        Bukkit.broadcastMessage(ChatColor.AQUA + "! ! ! " + ChatColor.BLUE + "Blue " + ChatColor.AQUA + "flag captured by " + ChatColor.RED + event.getPlayer().getName() + ChatColor.AQUA + " ! ! !");
                         blueFlagCaptured = false;
                         blueCaptureName = "";
                         world.playEffect(location, Effect.ENDERDRAGON_SHOOT, 0, 100);
+                        world.getBlockAt(location).setType(Material.AIR);
                     }
                 } else {
                     once = !once;
@@ -81,7 +83,7 @@ public class FlagLogic implements Listener{
                 if (once) {
                     if (!blueFlagCaptured && Teams.red.hasPlayer(event.getPlayer())) {
                         world.playEffect(location, Effect.BLAZE_SHOOT, 0, 100);
-                        Bukkit.broadcastMessage(ChatColor.AQUA + "! ! ! " + ChatColor.BLUE + "Blue " + ChatColor.AQUA + "flag stolen by " + ChatColor.BLUE + event.getPlayer().getName() + ChatColor.AQUA + " ! ! !");
+                        Bukkit.broadcastMessage(ChatColor.AQUA + "! ! ! " + ChatColor.BLUE + "Blue " + ChatColor.AQUA + "flag stolen by " + ChatColor.RED + event.getPlayer().getName() + ChatColor.AQUA + " ! ! !");
                         blueFlagCaptured = true;
                         blueCaptureName = event.getPlayer().getDisplayName();
                         once = !once;
@@ -91,7 +93,7 @@ public class FlagLogic implements Listener{
                     if (redFlagCaptured && Teams.blue.hasPlayer(event.getPlayer()) && (event.getPlayer().getName() == redCaptureName)) {
                         Teams.addBlue();
                         Setup.resetRedFlag();
-                        Bukkit.broadcastMessage(ChatColor.AQUA + "! ! ! " + ChatColor.RED + "Red " + ChatColor.AQUA + "flag captured by " + ChatColor.RED + event.getPlayer().getName() + ChatColor.AQUA + " ! ! !");
+                        Bukkit.broadcastMessage(ChatColor.AQUA + "! ! ! " + ChatColor.RED + "Red " + ChatColor.AQUA + "flag captured by " + ChatColor.BLUE + event.getPlayer().getName() + ChatColor.AQUA + " ! ! !");
                         redFlagCaptured = false;
                         redCaptureName = "";
                         world.playEffect(location, Effect.ENDERDRAGON_SHOOT, 0, 100);
@@ -115,7 +117,12 @@ public class FlagLogic implements Listener{
     }
     @EventHandler
     public void onDeath(PlayerDeathEvent event){
+        World world = event.getEntity().getWorld();
         if(redFlagCaptured && Teams.blue.hasPlayer(event.getEntity()) && (event.getEntity().getName() == redCaptureName)){
+            Bukkit.broadcastMessage(ChatColor.AQUA + "! ! ! " + "RED FLAG DROPPED " + " ! ! !");
+            Location location = event.getEntity().getLocation();
+            world.playEffect(location, Effect.FIREWORK_SHOOT, 0, 500);
+            world.spawnEntity(location, EntityType.FIREWORK);
             redFlagCaptured = false;
             redFlagX = (int)event.getEntity().getLocation().getX();
             redFlagY = (int)event.getEntity().getLocation().getY();
@@ -124,6 +131,10 @@ public class FlagLogic implements Listener{
             Setup.placeRedFlag(redFlagX, redFlagY, redFlagZ);
         }
         if(blueFlagCaptured && Teams.red.hasPlayer(event.getEntity()) && (event.getEntity().getName() == blueCaptureName)){
+            Bukkit.broadcastMessage(ChatColor.AQUA + "! ! ! " + "BLUE FLAG DROPPED " + " ! ! !");
+            Location location = event.getEntity().getLocation();
+            world.playEffect(location, Effect.FIREWORK_SHOOT, 0, 500);
+            world.spawnEntity(location, EntityType.FIREWORK);
             blueFlagCaptured = false;
             blueFlagX = (int)event.getEntity().getLocation().getX();
             blueFlagY = (int)event.getEntity().getLocation().getY();

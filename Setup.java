@@ -19,9 +19,6 @@ public class Setup implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
         player = (Player) sender;
-        Setup setup = new Setup();
-        PlatformSpawner platformSpawnerBlue = new PlatformSpawner();
-        PlatformSpawner platformSpawnerRed = new PlatformSpawner();
         if (!(sender instanceof Player)) {
             return true;
         }
