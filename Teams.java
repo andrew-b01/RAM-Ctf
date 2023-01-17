@@ -33,7 +33,7 @@ public class Teams implements CommandExecutor {
     public static void initializeTeams(){
         ScoreboardManager manager = Bukkit.getScoreboardManager();
         board = manager.getNewScoreboard();
-        obj = board.registerNewObjective("MainScoreboard","dummy", ChatColor.BOLD + "------RamCTF-----\n\n");
+        obj = board.registerNewObjective("MainScoreboard","dummy", ChatColor.BOLD + "------AndrewB-ISP-CTF-----\n\n");
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
         bluescore = obj.getScore(ChatColor.BLUE + "BLUE SCORE: " + ChatColor.GOLD);
         redscore = obj.getScore(ChatColor.RED + "RED SCORE: " + ChatColor.GOLD);
