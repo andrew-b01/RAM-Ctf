@@ -12,10 +12,14 @@ public final class Main extends JavaPlugin {
         Setup setup = new Setup();
         Teams teams = new Teams();
         getCommand("setup").setExecutor(setup);
+        getCommand("start").setExecutor(setup);
+        getCommand("end").setExecutor(setup);
         getCommand("team").setExecutor(teams);
         getCommand("clearmiddle").setExecutor(setup);
         getServer().getPluginManager().registerEvents(new FlagLogic(), this);
         getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "RamCTF is enabled!");
+
+        Teams.initializeTeams();
     }
 
     @Override

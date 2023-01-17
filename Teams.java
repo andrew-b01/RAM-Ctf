@@ -29,17 +29,8 @@ public class Teams implements CommandExecutor {
     static Scoreboard board;
     static Objective obj;
 
-    @Override
-    @SuppressWarnings("deprecation")
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-            return true;
-        }
 
-        player = (Player) sender;
-
-        double redx = Setup.redx; double bluex = Setup.bluex; double y = Setup.y; double z = Setup.z;
-
+    public static void initializeTeams(){
         ScoreboardManager manager = Bukkit.getScoreboardManager();
         board = manager.getNewScoreboard();
         obj = board.registerNewObjective("MainScoreboard","dummy", ChatColor.BOLD + "------RamCTF-----\n\n");
@@ -48,11 +39,37 @@ public class Teams implements CommandExecutor {
         redscore = obj.getScore(ChatColor.RED + "RED SCORE: " + ChatColor.GOLD);
         redscore.setScore(0);
         bluescore.setScore(0);
-        player.setScoreboard(board);
 
+        blue = board.registerNewTeam("Blue");
+        blue.setPrefix(ChatColor.BLUE + "[BLUE] " + ChatColor.WHITE);
+        blue.setAllowFriendlyFire(false);
+        blue.setNameTagVisibility(NameTagVisibility.HIDE_FOR_OTHER_TEAMS);
+        blue.setCanSeeFriendlyInvisibles(true);
+
+        red = board.registerNewTeam("Red");
+        red.setPrefix(ChatColor.RED + "[RED] " + ChatColor.WHITE);
+        red.setAllowFriendlyFire(false);
+        red.setNameTagVisibility(NameTagVisibility.HIDE_FOR_OTHER_TEAMS);
+        red.setCanSeeFriendlyInvisibles(true);
+
+    }   
+    @Override
+    @SuppressWarnings("deprecation")
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        player = (Player) sender;
+        if (!(sender instanceof Player) || !Setup.gameSetup) {
+            player.sendMessage(ChatColor.RED + "Game not set up. Setup game by typing /setup");
+            
+            return true;
+        }
+
+        
+
+        double redx = Setup.redx; double bluex = Setup.bluex; double y = Setup.y; double z = Setup.z;
         redflag = new Location(player.getWorld(), redx, y, z);
         blueflag = new Location(player.getWorld(), bluex, y, z);
         
+
         if (args.length == 0) {
 
             TextComponent blue = new TextComponent("\nJoin Blue Team\n");
@@ -74,42 +91,45 @@ public class Teams implements CommandExecutor {
 
         else if (args[0].equals("blue")) {
 
-            blue = board.registerNewTeam("Blue");
-            blue.setPrefix(ChatColor.BLUE + "[BLUE] " + ChatColor.WHITE);
-
-            blue.setAllowFriendlyFire(false);
-            blue.setNameTagVisibility(NameTagVisibility.HIDE_FOR_OTHER_TEAMS);
-            blue.setCanSeeFriendlyInvisibles(true);
-
-            player.setBedSpawnLocation(blueflag, true);
-
-            if(red != null){
-                if(red.hasPlayer(player)){
-                    red.removePlayer(player);
-                }
+            if(blue != null && blue.hasPlayer(player)){
+                player.sendMessage("You are already on the blue team");
+                return true;
             }
+
+            if(red != null && red.hasPlayer(player)){
+                red.removePlayer(player);
+                blue.addPlayer(player);
+                player.setBedSpawnLocation(blueflag, true);
+                player.sendMessage(ChatColor.DARK_AQUA + "You have joined the BLUE team, press TAB to check teams");
+                return true;
+            }
+
+            player.setScoreboard(board);
             blue.addPlayer(player);
-            
+            player.setBedSpawnLocation(blueflag, true);
             player.sendMessage(ChatColor.DARK_AQUA + "You have joined the BLUE team, press TAB to check teams");
+
     }
 
         else if (args[0].equals("red")) {
-            red = board.registerNewTeam("Red");
-            red.setPrefix(ChatColor.RED + "[RED] " + ChatColor.WHITE);
 
-            red.setAllowFriendlyFire(false);
-            red.setNameTagVisibility(NameTagVisibility.HIDE_FOR_OTHER_TEAMS);
-            red.setCanSeeFriendlyInvisibles(true);
-
-            player.setBedSpawnLocation(redflag, true);
-
-            if(blue != null){
-                if(blue.hasPlayer(player)){
-                    blue.removePlayer(player);
-                }
+            if(red != null && red.hasPlayer(player)){
+                player.sendMessage("You are already on the red team");
+                return true;
             }
+            if(blue != null && blue.hasPlayer(player)){
+                blue.removePlayer(player);
+                red.addPlayer(player);
+                player.setBedSpawnLocation(redflag, true);  
+                player.sendMessage(ChatColor.DARK_AQUA + "You have joined the RED team, press TAB to check teams");
+                return true;
+            }
+
+            player.setScoreboard(board);
+            player.setBedSpawnLocation(redflag, true);
             red.addPlayer(player);
             player.sendMessage(ChatColor.DARK_AQUA + "You have joined the RED team, press TAB to check teams");
+
         }
         return true;}
 

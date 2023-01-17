@@ -9,6 +9,9 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import me.average.ramctf.Teams;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 public class FlagLogic implements Listener{
     static int redFlagX;
@@ -46,15 +49,16 @@ public class FlagLogic implements Listener{
     @EventHandler
     public void onPlayerSneak(PlayerToggleSneakEvent event){
         Teams.updateScoreboard();
-        PlatformSpawner.Spawn(Setup.bluex, Setup.y, Setup.z, event.getPlayer(), Material.BLUE_WOOL, true);
-        PlatformSpawner.Spawn(Setup.redx, Setup.y, Setup.z, event.getPlayer(), Material.RED_WOOL, true);
         player = event.getPlayer();
         Location location = player.getLocation();
         double playerx = location.getX();
         double playerz = location.getZ();
         double playery = location.getY();
         World world = player.getWorld();
-        if (Teams.blue != null && Teams.red != null) {
+        Scoreboard board = player.getScoreboard();
+        Team team = board.getEntryTeam(player.getName());
+        // System.out.println(redFlagX);  System.out.println(redFlagY); System.out.println(redFlagZ); System.out.println();
+        if (team != null) {
             if (playerx >= redFlagX - 2 && playerx <= redFlagX + 2 && playerz >= redFlagZ - 2 && playerz <= redFlagZ + 2 && playery <= redFlagY + 2 && playery >= redFlagY - 2) {
                 if (once) {
                     if (!redFlagCaptured && Teams.blue.hasPlayer(event.getPlayer())) {
@@ -108,13 +112,22 @@ public class FlagLogic implements Listener{
     }
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
-        if (Teams.blue != null && Teams.red != null) {
-            if ((Teams.red.hasPlayer(event.getPlayer()) && blueFlagCaptured && (event.getPlayer().getName() == blueCaptureName)) || (Teams.blue.hasPlayer(event.getPlayer()) && redFlagCaptured && (event.getPlayer().getName() == redCaptureName))) {
-                player.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, player.getLocation(), 2);
+        PlatformSpawner.Spawn(Setup.bluex, Setup.y, Setup.z, event.getPlayer(), Material.BLUE_WOOL, true);
+        PlatformSpawner.Spawn(Setup.redx, Setup.y, Setup.z, event.getPlayer(), Material.RED_WOOL, true);
+        Player player = event.getPlayer();
+        Scoreboard board = player.getScoreboard();
+        Team team = board.getEntryTeam(player.getName());
+        if (team != null) {
+            if(team.getName().equalsIgnoreCase("red"))
+                if(blueFlagCaptured && (event.getPlayer().getName().equals(blueCaptureName))){
+                    player.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, player.getLocation(), 2);
+            } else if(team.getName().equalsIgnoreCase("blue"))
+                if(redFlagCaptured && (event.getPlayer().getName().equals(redCaptureName))) {
+                    player.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, player.getLocation(), 2);
+                }
             }
-
         }
-    }
+
     @EventHandler
     public void onDeath(PlayerDeathEvent event){
         World world = event.getEntity().getWorld();
@@ -144,4 +157,21 @@ public class FlagLogic implements Listener{
         }
 
     }
+
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        Player player = event.getPlayer();
+        Scoreboard board = player.getScoreboard();
+        Team team = board.getEntryTeam(player.getName());
+        if(team != null){
+            if(team.getName().equalsIgnoreCase("red")){
+                Location respawnLocation = new Location(player.getWorld(), redFlagX, redFlagY+2, redFlagZ);
+                event.setRespawnLocation(respawnLocation);
+            }else if (team.getName().equalsIgnoreCase("blue")){
+                Location respawnLocation = new Location(player.getWorld(), blueFlagX, blueFlagY+2, blueFlagZ);
+                event.setRespawnLocation(respawnLocation);
+            }
+        }
+    }
+    
 }
