@@ -72,13 +72,13 @@ public class Teams implements CommandExecutor {
 
         if (args.length == 0) {
 
-            TextComponent blue = new TextComponent("\nJoin Blue Team\n");
+            TextComponent blue = new TextComponent("Join Blue Team\n");
             blue.setColor(ChatColor.BLUE);
             blue.setBold(true);
             blue.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/team blue"));
             blue.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                     new ComponentBuilder("Click here to join blue team").color(ChatColor.GRAY).italic(true).create()));
-            Bukkit.spigot().broadcast(blue);
+            player.spigot().sendMessage(blue);
 
             TextComponent red = new TextComponent("\nJoin Red Team");
             red.setColor(ChatColor.RED);
@@ -86,7 +86,7 @@ public class Teams implements CommandExecutor {
             red.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/team red"));
             red.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                     new ComponentBuilder("Click here to join red team").color(ChatColor.GRAY).italic(true).create()));
-            Bukkit.spigot().broadcast(red);
+            player.spigot().sendMessage(red);
         }
 
         else if (args[0].equals("blue")) {

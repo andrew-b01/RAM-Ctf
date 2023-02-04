@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+import me.average.ramctf.Teams;
 
 public class Setup implements CommandExecutor {
     public static int bluex;
@@ -46,42 +47,55 @@ public class Setup implements CommandExecutor {
                 Team team = board.getEntryTeam(player.getName());
                 if (team != null) {
                     if (team.getName().equalsIgnoreCase("blue")) {
-                        Location teleportLocation = new Location(player.getWorld(), bluex + 7, y + 1, z + 8);
-                        // player.teleport(teleportLocation);
+                        Location teleportLocation = new Location(player.getWorld(), Tools.bluePlatformX, Tools.bluePlatformY, Tools.bluePlatformZ, 90, 0);
                         player.setWalkSpeed(0);
-                        for (int i = 5; i > 0; i--) {
-                            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
-                            player.sendTitle(ChatColor.RED + "Game starting in " + i + " seconds", "", 10, 70, 20);
+                        int timer = 0;
+                        for (int i = 500; i > 0; i--) {
+
+                            if (timer%100 == 0) {
+                                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                                player.sendTitle(ChatColor.RED + "Game starting in " + i/100 + " seconds", "", 10, 70, 20);
+                            }
+
                             player.teleport(teleportLocation);
+
                             try {
-                                Thread.sleep(1000);
+                                Thread.sleep(10);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
+
+                            timer += 1;
                         }
                         player.setFlySpeed(0.1f);
                         player.setWalkSpeed(0.2f);
                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
                         player.sendTitle(ChatColor.GREEN + "Good Luck!", "", 10, 170, 20);
                     } else if (team.getName().equalsIgnoreCase("red")) {
-                        Location teleportLocation = new Location(player.getWorld(), redx + 7, y + 1, z + 8);
-                        // player.teleport(teleportLocation);
+                        Location teleportLocation = new Location(player.getWorld(), Tools.redPlatformX, Tools.redPlatformY, Tools.redPlatformZ, -90, 0);
                         player.setWalkSpeed(0);
-                        
-                        for (int i = 5; i > 0; i--) {
-                            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
-                            player.sendTitle(ChatColor.RED + "Game starting in " + i + " seconds", "", 10, 70, 20);
+                        int timer = 0;
+                        for (int i = 500; i > 0; i--) {
+
+                            if (timer%100 == 0) {
+                                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                                player.sendTitle(ChatColor.RED + "Game starting in " + i/100 + " seconds", "", 10, 70, 20);
+                            }
+
                             player.teleport(teleportLocation);
+
                             try {
-                                Thread.sleep(1000);
+                                Thread.sleep(10);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
+
+                            timer += 1;
                         }
                         player.setFlySpeed(0.1f);
                         player.setWalkSpeed(0.2f);
                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
-                        player.sendTitle(ChatColor.GREEN + "Good Luck!", "", 10, 170, 20);
+                        player.sendTitle(ChatColor.GREEN + "Good Luck!", "", 10, 140, 20);
                     }
                 }
 
@@ -108,14 +122,18 @@ public class Setup implements CommandExecutor {
             gameSetup = true;
 
             Bukkit.broadcastMessage(ChatColor.AQUA + "Game setup initialized\n");
-            FlagLogic.setredX((int) player.getLocation().getX() - 77);
-            FlagLogic.setblueX((int) player.getLocation().getX() + 93);
-            FlagLogic.setZ((int) player.getLocation().getZ() + 8);
-            FlagLogic.setY((int) player.getLocation().getY());
+
             bluex = (int) player.getLocation().getX() + 85;
             redx = (int) player.getLocation().getX() - 85;
+
             y = (int) player.getLocation().getY();
             z = (int) player.getLocation().getZ();
+
+            Tools.setBlueFlagCoords(bluex+7, y+1, z+8);
+            Tools.setBluePlatformCords(bluex+7, y+1, z+8);
+
+            Tools.setRedFlagCoords(redx+7, y+1, z+8);
+            Tools.setRedPlatformCoords(redx+7, y+1, z+8);
 
             platform(bluex, y, z, player, Material.BLUE_WOOL, "Blue", Material.BLUE_BANNER, clearmiddle); 
             platform(redx, y, z, player, Material.RED_WOOL, "Red", Material.RED_BANNER, clearmiddle);
@@ -163,39 +181,15 @@ public class Setup implements CommandExecutor {
                 }
             }
         }
-
-        if(color.equals("Red")){
-            FlagLogic.setredX(x + 7); FlagLogic.setY(y+1); FlagLogic.setZ(z+8);
-        }
-        
-        else {
-            FlagLogic.setblueX(x + 7); FlagLogic.setY(y+1); FlagLogic.setZ(z+8);
-        }
             
         world.getBlockAt(x + 7, y + 1, z + 8).setType(banner);
 
-        //Play particle on banner position
-        //Location place = new Location(world, x + 1, y + 8, z + 8);
-        //world.playEffect(place, Effect.ENDER_SIGNAL, 2003);
-
         if(color.equals("Blue")) {
-            Bukkit.broadcastMessage(ChatColor.BLUE + color + " platform has been placed at: x " + x + " y " + y + " z " + z);
+            Bukkit.broadcastMessage(ChatColor.BLUE + color + " Platform has been placed at: x " + x + " y " + y + " z " + z);
         }
         else {
-            Bukkit.broadcastMessage(ChatColor.RED + color + " platform has been placed at: x " + x + " y " + y + " z " + z);
+            Bukkit.broadcastMessage(ChatColor.RED + color + " Platform has been placed at: x " + x + " y " + y + " z " + z);
         }
     }
-    static void clearRedFlag(){
-        world.getBlockAt(FlagLogic.redFlagX, FlagLogic.redFlagY, FlagLogic.redFlagZ).setType(Material.AIR);
-    }
-    static void clearBlueFlag(){
-        world.getBlockAt(FlagLogic.blueFlagX, FlagLogic.blueFlagY, FlagLogic.blueFlagZ).setType(Material.AIR);
-    }
-    static void resetRedFlag(){ world.getBlockAt(redx + 7, y + 1, z + 8).setType(Material.RED_BANNER); }
-    static void resetBlueFlag(){
-        world.getBlockAt(bluex + 7, y + 1, z + 8).setType(Material.BLUE_BANNER);
-    }
-    static void placeBlueFlag(int x, int y, int z){ world.getBlockAt(x, y, z).setType(Material.BLUE_BANNER);}
-    static void placeRedFlag(int x, int y, int z){ world.getBlockAt(x, y, z).setType(Material.RED_BANNER);}
-    }
+}
 
