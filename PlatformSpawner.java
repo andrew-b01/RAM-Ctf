@@ -15,18 +15,7 @@ public class PlatformSpawner {
             for (int i = 1; i < 16; i++) {
                 for (int o = 0; o < 15; o++) {
                     world.getBlockAt(x + o, y, z + i).setType(material);
-
-                    int height = y;
-                    int airheight = 1;
-                    while (height < 255) {
-
-                        if (!(((x + o == Tools.bluePlatformX) && (y + airheight - Tools.bluePlatformY <= 2) && (z + i == Tools.bluePlatformZ)) || ((x + o == Tools.redPlatformX) && (y + airheight - Tools.redPlatformY <= 2) && (z + i == Tools.redPlatformZ)))){
-                            world.getBlockAt(x + o, y + airheight, z + i).setType(Material.AIR);
-                        }
-                        
-                        airheight++;
-                        height++;
-                    }
+                    
                 }
             }
         }

@@ -51,7 +51,7 @@ public class Tools{
 
         double distanceFromPlayerToPlatform = Math.sqrt(Math.pow(playerX - redPlatformX, 2) + Math.pow(playerZ - redPlatformZ, 2));
         
-        if(distanceFromPlayerToPlatform <= 8 && Math.abs(redPlatformY - playerY) <= 3){
+        if(distanceFromPlayerToPlatform <= 7.5 && (playerY - redPlatformY) >= -1){
             return true;
         } else {
             return false;
@@ -65,7 +65,29 @@ public class Tools{
 
         double distanceFromPlayerToPlatform = Math.sqrt(Math.pow(playerX - bluePlatformX, 2) + Math.pow(playerZ - bluePlatformZ, 2));
 
-        if(distanceFromPlayerToPlatform <= 8 && Math.abs(bluePlatformY - playerY) <= 3){
+        if(distanceFromPlayerToPlatform <= 7.5 && (playerY - bluePlatformY) >= -1){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean pointWithinBluePlatform(double x, double z){
+
+        double distanceFromPlayerToPlatform = Math.sqrt(Math.pow(x - bluePlatformX, 2) + Math.pow(z - bluePlatformZ, 2));
+
+        if(distanceFromPlayerToPlatform <= 7.5){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean pointWithinRedPlatform(double x, double z){
+
+        double distanceFromPlayerToPlatform = Math.sqrt(Math.pow(x - redPlatformX, 2) + Math.pow(z - redPlatformZ, 2));
+
+        if(distanceFromPlayerToPlatform <= 7.5){
             return true;
         } else {
             return false;
@@ -79,7 +101,7 @@ public class Tools{
 
         double distanceFromPlayerToFlag = Math.sqrt(Math.pow(playerX - currentRedFlagX, 2) + Math.pow(playerZ - currentRedFlagZ, 2));
 
-        if(distanceFromPlayerToFlag <= 2 && Math.abs(currentRedFlagY - playerY) <= 3){
+        if(distanceFromPlayerToFlag <= 2 && Math.abs(currentRedFlagY - playerY) <= 3 && (playerY - currentBlueFlagY) >= -1){
             return true;
         } else {
             return false;
@@ -92,7 +114,7 @@ public class Tools{
         int playerZ = (int) player.getLocation().getZ();
 
         double distanceFromPlayerToFlag = Math.sqrt(Math.pow(playerX - currentBlueFlagX, 2) + Math.pow(playerZ - currentBlueFlagZ, 2));
-        if(distanceFromPlayerToFlag <= 2 && Math.abs(currentBlueFlagY - playerY) <= 3){
+        if(distanceFromPlayerToFlag <= 2 && Math.abs(currentBlueFlagY - playerY) <= 3 && (playerY - currentBlueFlagY) >= -1){
             return true;
         } else {
             return false;
@@ -102,12 +124,16 @@ public class Tools{
     public static void clearRedFlag(World world){world.getBlockAt(currentRedFlagX, currentRedFlagY, currentRedFlagZ).setType(Material.AIR);}
     public static void clearBlueFlag(World world){world.getBlockAt(currentBlueFlagX, currentBlueFlagY, currentBlueFlagZ).setType(Material.AIR);}
 
-    public static void resetRedFlag(World world){ world.getBlockAt(redPlatformX, redPlatformY, redPlatformZ).setType(Material.RED_BANNER); }
-    public static void resetBlueFlag(World world){ world.getBlockAt(bluePlatformX, bluePlatformY, bluePlatformZ).setType(Material.BLUE_BANNER); }
+    public static void resetRedFlag(World world){ world.getBlockAt(redPlatformX, redPlatformY, redPlatformZ).setType(Material.RED_BANNER); resetRedFlagCoordsAtPlatform();}
+    public static void resetBlueFlag(World world){ world.getBlockAt(bluePlatformX, bluePlatformY, bluePlatformZ).setType(Material.BLUE_BANNER); resetBlueFlagCoordsAtPlatform();}
+
+    public static void resetRedFlagCoordsAtPlatform() { setRedFlagCoords(redPlatformX, redPlatformY, redPlatformZ);}
+    public static void resetBlueFlagCoordsAtPlatform() { setBlueFlagCoords(bluePlatformX, bluePlatformY, bluePlatformZ);}
+
+    public static boolean blueFlagAtPlatform() { return (currentBlueFlagX == bluePlatformX && currentBlueFlagZ == bluePlatformZ);}
+    public static boolean redFlagAtPlatform() { return (currentRedFlagX == redPlatformX && currentRedFlagZ == redPlatformZ);}
 
     public static void respawnRedFlagAtPosition(World world){ world.getBlockAt(currentRedFlagX, currentRedFlagY, currentRedFlagZ).setType(Material.RED_BANNER); }
     public static void respawnBlueFlagAtPosition(World world){ world.getBlockAt(currentBlueFlagX, currentBlueFlagY, currentBlueFlagZ).setType(Material.BLUE_BANNER); }
 
-    public static void placeBlueFlag(World world){ world.getBlockAt(currentBlueFlagX, currentBlueFlagY, currentBlueFlagZ).setType(Material.BLUE_BANNER);}
-    public static void placeRedFlag(World world){ world.getBlockAt(currentRedFlagX, currentRedFlagY, currentRedFlagZ).setType(Material.RED_BANNER);}
 }

@@ -140,7 +140,6 @@ public class Setup implements CommandExecutor {
 
             Bukkit.broadcastMessage(ChatColor.AQUA + "Run /team to set up teams");
 
-
             return true;
         }
         return true;
