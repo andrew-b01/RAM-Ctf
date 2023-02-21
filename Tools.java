@@ -2,6 +2,9 @@ package me.average.ramctf;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Slime;
+import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
 
 public class Tools{
     static int redPlatformX;
@@ -19,6 +22,44 @@ public class Tools{
     static int currentBlueFlagX;
     static int currentBlueFlagY;
     static int currentBlueFlagZ;
+
+    public static Slime redSlime;
+    public static Slime blueSlime; 
+
+    public static void spawnRedSlime(Location location){
+        redSlime = (Slime) location.getWorld().spawnEntity(location, EntityType.SLIME);
+        redSlime.setSize(3);
+        redSlime.setAI(false);
+        redSlime.setInvulnerable(true);
+        redSlime.setInvisible(true);
+        redSlime.setGlowing(true);
+        redSlime.setCollidable(false);
+        redSlime.setSilent(true);
+        redSlime.setMaxHealth(2047);
+        redSlime.setHealth(2047);
+    }
+    
+    public static void removeBlueSlime(){
+        blueSlime.remove();
+        blueSlime = null;
+    }
+
+    public static void removeRedSlime(){
+        redSlime.remove();
+        redSlime = null;
+    }
+    public static void spawnBlueSlime(Location location){
+        blueSlime = (Slime) location.getWorld().spawnEntity(location, EntityType.SLIME);
+        blueSlime.setSize(3);
+        blueSlime.setAI(false);
+        blueSlime.setInvulnerable(true);
+        blueSlime.setInvisible(true);
+        blueSlime.setGlowing(true);
+        blueSlime.setCollidable(false);
+        blueSlime.setSilent(true);
+        blueSlime.setMaxHealth(2047);
+        blueSlime.setHealth(2047);
+    }
 
     public static void setRedPlatformCoords(int x, int y, int z){
         redPlatformX = x;
