@@ -9,6 +9,7 @@ import me.average.ramctf.Tools;
 
 public class PlatformSpawner {
 
+    //spawns a platform at the given coordinates
     static void Spawn(int x, int y, int z, Player sender, Material material, boolean spawn) {
         if (spawn) {
             World world = sender.getWorld();

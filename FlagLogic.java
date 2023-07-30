@@ -30,13 +30,13 @@ public class FlagLogic implements Listener {
     static int blueFlagZ;
     static int blueFlagY;
     static boolean once;
-    boolean blueFlagCaptured = false;
-    boolean redFlagCaptured = false;
+    static boolean blueFlagCaptured = false;
+    static boolean redFlagCaptured = false;
     public Player player;
-    public String blueCaptureName;
-    public String redCaptureName;
-    public Slime redSlime;
-    public Slime blueSlime;
+    public static String blueCaptureName;
+    public static String redCaptureName;
+    // public Slime redSlime;
+    // public Slime blueSlime;
 
     static void setredX(int x) {
         redFlagX = x;
@@ -56,10 +56,37 @@ public class FlagLogic implements Listener {
         redFlagY = y;
     }
 
+    static void endGame(){
+        redFlagCaptured = false;
+        blueFlagCaptured = false;
+    }
+
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
-        Teams.updateScoreboard();
+        if (Teams.bluePoints >= 5){
+            endGame();
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                //play a fun melody to celebrate the end of the game
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
+                player.removePotionEffect(PotionEffectType.GLOWING);
+                player.sendTitle("Blue Team Wins!", "", 10, 70, 20);
+                
+            }
+        }
 
+        if (Teams.redPoints >= 5){
+            endGame();
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                //play a fun melody to celebrate the end of the game
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
+                player.removePotionEffect(PotionEffectType.GLOWING);
+                player.sendTitle("Red Team Wins!", "", 10, 70, 20);
+            }
+        }
+        //update player's scoreboard
+        Teams.updateScoreboard();
         PlatformSpawner.Spawn(Tools.bluePlatformX - 7, Tools.bluePlatformY - 1, Tools.bluePlatformZ - 8,
                 event.getPlayer(), Material.BLUE_WOOL, true);
         PlatformSpawner.Spawn(Tools.redPlatformX - 7, Tools.redPlatformY - 1, Tools.redPlatformZ - 8, event.getPlayer(),
@@ -70,14 +97,17 @@ public class FlagLogic implements Listener {
         World world = player.getWorld();
         Location location = player.getLocation();
 
+        //if red flag is not captured, respawn it
         if (!redFlagCaptured) {
             Tools.respawnRedFlagAtPosition(world);
         }
 
+        //if blue flag is not captured, respawn it
         if (!blueFlagCaptured) {
             Tools.respawnBlueFlagAtPosition(world);
         }
 
+        //if the flag is not caputred and the flag is not at the platform, respawn it
         if (!redFlagCaptured && !Tools.redFlagAtPlatform()) {
             Tools.respawnRedFlagAtPosition(world);
             Location redFlagLocation = new Location(world, Tools.currentRedFlagX, Tools.currentRedFlagY + 20,
@@ -85,22 +115,24 @@ public class FlagLogic implements Listener {
             world.spawnParticle(Particle.FIREWORKS_SPARK, redFlagLocation, 20);
         }
 
+        //if the flag is not caputred and the flag is not at the platform, respawn it
         if (!blueFlagCaptured && !Tools.blueFlagAtPlatform()) {
             Tools.respawnBlueFlagAtPosition(world);
             Location blueFlagLocation = new Location(world, Tools.currentBlueFlagX, Tools.currentBlueFlagY + 20,
                     Tools.currentBlueFlagZ);
             world.spawnParticle(Particle.FIREWORKS_SPARK, blueFlagLocation, 20);
         }
-
+        
         if (team != null) {
 
+            //if the player is the player that captured the flag, give them glowing effect
             if (team.getName().equalsIgnoreCase("red")) {
                 if (blueFlagCaptured && (event.getPlayer().getName().equals(blueCaptureName))) {
                     world.playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 1);
                     event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 1));
-
                 }
 
+            //if the player is the player that captured the flag, give them glowing effect
             } else if (team.getName().equalsIgnoreCase("blue")) {
                 if (redFlagCaptured && (event.getPlayer().getName().equals(redCaptureName))) {
                     world.playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 1);
@@ -109,7 +141,9 @@ public class FlagLogic implements Listener {
             }
 
             if (Tools.PlayerOnRedFlag(player)) {
-                if (!redFlagCaptured && Teams.blue.hasEntry(event.getPlayer().getDisplayName())) {
+
+                //if flag got stolen, display message and clear slimes
+                if (!redFlagCaptured && Teams.blue.hasEntry(event.getPlayer().getName())) {
 
                     world.playEffect(location, Effect.BLAZE_SHOOT, 0, 100);
                     for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
@@ -118,53 +152,57 @@ public class FlagLogic implements Listener {
                     }
 
                     redFlagCaptured = true;
-                    redCaptureName = event.getPlayer().getDisplayName();
+                    redCaptureName = event.getPlayer().getName();
 
-                    if (Tools.redSlime != null) {
-                        Tools.removeRedSlime();
-                    }
+                    // if (Tools.redSlime != null) {
+                    //     Tools.removeRedSlime();
+                    // }
 
                     Tools.clearRedFlag(world);
                     world.getBlockAt(location).setType(Material.AIR);
                 }
-
+                
+                //if flag got returned, display message and clear slimes
                 if (!redFlagCaptured && !Tools.redFlagAtPlatform()
-                        && Teams.red.hasEntry(event.getPlayer().getDisplayName())) {
+                        && Teams.red.hasEntry(event.getPlayer().getName())) {
                     world.playEffect(location, Effect.BAT_TAKEOFF, 0, 100);
                     for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                         onlinePlayer.sendTitle(ChatColor.RED + "Red " + ChatColor.AQUA + "flag returned by "
                                 + ChatColor.RED + event.getPlayer().getName(), "", 10, 40, 10);
                     }
 
-                    if (Tools.redSlime != null) {
-                        Tools.removeRedSlime();
-                    }
+                    // if (Tools.redSlime != null) {
+                    //     Tools.removeRedSlime();
+                    // }
                     Tools.clearRedFlag(world);
                     Tools.resetRedFlag(world);
                 }
             }
 
+            //if player is on blue flag
             if (Tools.PlayerOnBlueFlag(player)) {
 
-                if (!blueFlagCaptured && Teams.red.hasEntry(event.getPlayer().getDisplayName())) {
+                //if flag got stolen, display message and clear slimes
+                if (!blueFlagCaptured && Teams.red.hasEntry(event.getPlayer().getName())) {
                     for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                         onlinePlayer.sendTitle(ChatColor.BLUE + "Blue " + ChatColor.AQUA + "flag stolen by "
                                 + ChatColor.RED + event.getPlayer().getName(), "", 10, 40, 10);
                     }
 
-                    if (Tools.blueSlime != null) {
-                        Tools.removeBlueSlime();
-                    }
+                    // if (Tools.blueSlime != null) {
+                    //     Tools.removeBlueSlime();
+                    // }
 
                     world.playEffect(location, Effect.BLAZE_SHOOT, 0, 100);
                     blueFlagCaptured = true;
-                    blueCaptureName = event.getPlayer().getDisplayName();
+                    blueCaptureName = event.getPlayer().getName();
                     Tools.clearBlueFlag(world);
 
                 }
 
+                //if flag got returned, display message and clear slimes
                 if (!blueFlagCaptured && !Tools.blueFlagAtPlatform()
-                        && Teams.blue.hasEntry(event.getPlayer().getDisplayName())) {
+                        && Teams.blue.hasEntry(event.getPlayer().getName())) {
                     world.playEffect(location, Effect.BAT_TAKEOFF, 0, 100);
                     for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                         onlinePlayer.sendTitle(ChatColor.BLUE + "Blue " + ChatColor.AQUA + "flag returned by "
@@ -174,14 +212,16 @@ public class FlagLogic implements Listener {
                     Tools.clearBlueFlag(world);
                     Tools.resetBlueFlag(world);
 
-                    if (Tools.blueSlime != null) {
-                        Tools.removeBlueSlime();
-                    }
+                    // if (Tools.blueSlime != null) {
+                    //     Tools.removeBlueSlime();
+                    // }
                 }
             }
 
+            //if player is within red platform
             if (Tools.PlayerWithinRedPlatform(player)) {
-                if (blueFlagCaptured && Teams.red.hasEntry(event.getPlayer().getDisplayName())
+                //if blue flag is captured and player is on red team, add a point to red team
+                if (blueFlagCaptured && Teams.red.hasEntry(event.getPlayer().getName())
                         && (event.getPlayer().getName() == blueCaptureName)) {
                     Teams.addRed();
                     Tools.resetBlueFlag(world);
@@ -199,8 +239,10 @@ public class FlagLogic implements Listener {
                 }
             }
 
+            //if red flag is captured and player is on blue team, add a point to blue team
             if (Tools.PlayerWithinBluePlatform(player)) {
-                if (redFlagCaptured && Teams.blue.hasEntry(event.getPlayer().getDisplayName())
+
+                if (redFlagCaptured && Teams.blue.hasEntry(event.getPlayer().getName())
                         && (event.getPlayer().getName() == redCaptureName)) {
                     Teams.addBlue();
                     Tools.resetRedFlag(world);
@@ -223,7 +265,8 @@ public class FlagLogic implements Listener {
     public void onDeath(PlayerDeathEvent event) {
         World world = event.getEntity().getWorld();
 
-        if (redFlagCaptured && Teams.blue.hasEntry(event.getEntity().getDisplayName())
+        //if play is the one that was carrying the flag, drop it
+        if (redFlagCaptured && Teams.blue.hasEntry(event.getEntity().getName())
                 && (event.getEntity().getName() == redCaptureName)) {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 player.sendTitle(ChatColor.RED + "RED FLAG DROPPED", "", 10, 40, 10);
@@ -241,13 +284,15 @@ public class FlagLogic implements Listener {
             Tools.setRedFlagCoords(redFlagX, redFlagY, redFlagZ);
             Tools.respawnRedFlagAtPosition(world);
 
-            Location slimeLocation = new Location(world, location.getX(), location.getY() + 2, location.getZ());
-            Tools.spawnRedSlime(slimeLocation);
+            // Location slimeLocation = new Location(world, location.getX(), location.getY() + 2, location.getZ());
+            // Tools.spawnRedSlime(slimeLocation);
 
             redCaptureName = "";
 
         }
-        if (blueFlagCaptured && Teams.red.hasEntry(event.getEntity().getDisplayName())
+
+        //if play is the one that was carrying the flag, drop it
+        if (blueFlagCaptured && Teams.red.hasEntry(event.getEntity().getName())
                 && (event.getEntity().getName() == blueCaptureName)) {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 player.sendTitle(ChatColor.BLUE + "BLUE FLAG DROPPED", "", 10, 40, 10);
@@ -265,8 +310,8 @@ public class FlagLogic implements Listener {
             Tools.setBlueFlagCoords(blueFlagX, blueFlagY, blueFlagZ);
             Tools.respawnBlueFlagAtPosition(world);
 
-            Location slimeLocation = new Location(world, location.getX(), location.getY() + 2, location.getZ());
-            Tools.spawnBlueSlime(slimeLocation);
+            // Location slimeLocation = new Location(world, location.getX(), location.getY() + 2, location.getZ());
+            // Tools.spawnBlueSlime(slimeLocation);
 
             blueCaptureName = "";
 
@@ -279,19 +324,22 @@ public class FlagLogic implements Listener {
         Player player = event.getPlayer();
         Scoreboard board = player.getScoreboard();
         Team team = board.getEntryTeam(player.getName());
+
+        //sets player spawns at platform
         if (team != null) {
             if (team.getName().equalsIgnoreCase("red")) {
-                Location respawnLocation = new Location(player.getWorld(), Tools.redPlatformX, Tools.redPlatformY,
+                Location respawnLocation = new Location(player.getWorld(), Tools.redPlatformX+20, Tools.redPlatformY,
                         Tools.redPlatformZ);
                 event.setRespawnLocation(respawnLocation);
             } else if (team.getName().equalsIgnoreCase("blue")) {
-                Location respawnLocation = new Location(player.getWorld(), Tools.bluePlatformX, Tools.bluePlatformY,
+                Location respawnLocation = new Location(player.getWorld(), Tools.bluePlatformX-20, Tools.bluePlatformY,
                         Tools.bluePlatformZ);
                 event.setRespawnLocation(respawnLocation);
             }
         }
     }
 
+    //prevents player from building on platform or placing banners
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         Material blockType = event.getBlockPlaced().getType();
@@ -308,17 +356,20 @@ public class FlagLogic implements Listener {
         }
     }
 
+    //prevents player from breaking platforms
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Material blockType = event.getBlock().getType();
         if (blockType == Material.BLUE_BANNER || blockType == Material.RED_BANNER) {
             event.setCancelled(true);
+            event.setDropItems(false);
         }
 
         if ((blockType == Material.BLUE_WOOL || blockType == Material.RED_WOOL)
                 && (Tools.pointWithinBluePlatform(event.getBlock().getX(), event.getBlock().getZ())
                         || Tools.pointWithinRedPlatform(event.getBlock().getX(), event.getBlock().getZ()))) {
             event.setCancelled(true);
+            event.setDropItems(false);
         }
     }
 

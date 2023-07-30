@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 
 public class Tools{
+    // Static variables
     static int redPlatformX;
     static int redPlatformY;
     static int redPlatformZ;
@@ -26,6 +27,7 @@ public class Tools{
     public static Slime redSlime;
     public static Slime blueSlime; 
 
+    // Static helper methods
     public static void spawnRedSlime(Location location){
         redSlime = (Slime) location.getWorld().spawnEntity(location, EntityType.SLIME);
         redSlime.setSize(3);
@@ -85,6 +87,8 @@ public class Tools{
         currentBlueFlagZ = z;
     }
 
+
+    //returns true if player is on red platform
     public static boolean PlayerWithinRedPlatform(Player player){
         int playerX = (int) player.getLocation().getX();
         int playerY = (int) player.getLocation().getY();
@@ -99,6 +103,7 @@ public class Tools{
         }
     }
 
+    //returns true if player is on blue platform
     public static boolean PlayerWithinBluePlatform(Player player){
         int playerX = (int) player.getLocation().getX();
         int playerY = (int) player.getLocation().getY();
@@ -113,6 +118,7 @@ public class Tools{
         }
     }
 
+    //returms true if point is within red platform
     public static boolean pointWithinBluePlatform(double x, double z){
 
         double distanceFromPlayerToPlatform = Math.sqrt(Math.pow(x - bluePlatformX, 2) + Math.pow(z - bluePlatformZ, 2));
@@ -124,6 +130,7 @@ public class Tools{
         }
     }
 
+    //returns true if point is within blue platform
     public static boolean pointWithinRedPlatform(double x, double z){
 
         double distanceFromPlayerToPlatform = Math.sqrt(Math.pow(x - redPlatformX, 2) + Math.pow(z - redPlatformZ, 2));
@@ -135,6 +142,7 @@ public class Tools{
         }
     }
 
+    //returns true if player is on red flag
     public static boolean PlayerOnRedFlag(Player player){
         int playerX = (int) player.getLocation().getX();
         int playerY = (int) player.getLocation().getY();
@@ -149,6 +157,7 @@ public class Tools{
         }
     }
 
+    //returns true if player is on blue flag
     public static boolean PlayerOnBlueFlag(Player player){
         int playerX = (int) player.getLocation().getX();
         int playerY = (int) player.getLocation().getY();
@@ -162,18 +171,23 @@ public class Tools{
         }
     }
 
+    //removes flag
     public static void clearRedFlag(World world){world.getBlockAt(currentRedFlagX, currentRedFlagY, currentRedFlagZ).setType(Material.AIR);}
     public static void clearBlueFlag(World world){world.getBlockAt(currentBlueFlagX, currentBlueFlagY, currentBlueFlagZ).setType(Material.AIR);}
 
+    //sets flag to platform
     public static void resetRedFlag(World world){ world.getBlockAt(redPlatformX, redPlatformY, redPlatformZ).setType(Material.RED_BANNER); resetRedFlagCoordsAtPlatform();}
     public static void resetBlueFlag(World world){ world.getBlockAt(bluePlatformX, bluePlatformY, bluePlatformZ).setType(Material.BLUE_BANNER); resetBlueFlagCoordsAtPlatform();}
 
+    //resets coords of flag
     public static void resetRedFlagCoordsAtPlatform() { setRedFlagCoords(redPlatformX, redPlatformY, redPlatformZ);}
     public static void resetBlueFlagCoordsAtPlatform() { setBlueFlagCoords(bluePlatformX, bluePlatformY, bluePlatformZ);}
 
+    //returns true if flag is at platform
     public static boolean blueFlagAtPlatform() { return (currentBlueFlagX == bluePlatformX && currentBlueFlagZ == bluePlatformZ);}
     public static boolean redFlagAtPlatform() { return (currentRedFlagX == redPlatformX && currentRedFlagZ == redPlatformZ);}
 
+    //respawns flag at coords
     public static void respawnRedFlagAtPosition(World world){ world.getBlockAt(currentRedFlagX, currentRedFlagY, currentRedFlagZ).setType(Material.RED_BANNER); }
     public static void respawnBlueFlagAtPosition(World world){ world.getBlockAt(currentBlueFlagX, currentBlueFlagY, currentBlueFlagZ).setType(Material.BLUE_BANNER); }
 
